@@ -1,11 +1,6 @@
-language: csharp,
-
-"os": [
-    "windows",
-    "linux"
-    ],
-  
-"dist": "xenial",
+language: csharp
+mono:
+  - latest
 
 dotnet: 5.0
 
