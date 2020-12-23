@@ -1,11 +1,17 @@
-language: csharp
+language: csharp,
+
+"os": [
+    "windows",
+    "linux"
+    ],
+  
+"dist": "xenial",
 
 dotnet: 5.0
-sudo: false
 
 env:
     global:
         - DOTNET_CLI_TELEMETRY_OPTOUT: 1
 
 script:
-    - dotnet build CIDemo.sln -c Release
+    - dotnet build PaidGame.sln -c Release
