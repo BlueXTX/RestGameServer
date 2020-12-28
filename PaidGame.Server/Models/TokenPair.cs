@@ -4,7 +4,7 @@ namespace PaidGame.Server.Models
 {
     public class TokenPair
     {
-        [Key] public long Id { get; set; }
+        [Key] [Required] public long Id { get; set; }
         [Required] public string AccessToken { get; set; }
         [Required] public string RefreshToken { get; set; }
 

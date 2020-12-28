@@ -2,10 +2,22 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PaidGame.Server.Models
 {
+    /// <summary>
+    /// Список социальных сетей
+    /// </summary>
     public class SocialNetworksList
     {
-        [Key] public long Id { get; set; }
-        [Required] public long ChatId { get; set; }
+        /// <summary>
+        /// Уникальный Id списка
+        /// </summary>
+        [Key]
+        public long Id { get; set; }
+
+        /// <summary>
+        /// Id чата, которому принадлежит этот список
+        /// </summary>
+        [Required]
+        public long ChatId { get; set; }
 
         /// <summary>
         /// Одноклассники
@@ -42,6 +54,10 @@ namespace PaidGame.Server.Models
         /// </summary>
         public string Telegram { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="chatId">Id чата с аккаунтом</param>
         public SocialNetworksList(long chatId)
         {
             ChatId = chatId;

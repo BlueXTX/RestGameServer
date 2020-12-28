@@ -6,22 +6,20 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PaidGame.Server.Models;
 using PaidGame.Server.Models.Requests;
-using PaidGame.Server.Models.Responses;
-using JwtRegisteredClaimNames =
-    Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace PaidGame.Server.Controllers
 {
+    /// <summary>
+    /// Контроллер для регистрации и авторизации
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly ApplicationContext _db;
         private readonly IOptions<AuthOptions> _authOptions;
         private readonly AccountsManager _accountsManager;
         private readonly TokensManager _tokensManager;
@@ -30,12 +28,16 @@ namespace PaidGame.Server.Controllers
             .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)
             ?.Value);
 
-        public AuthController(ApplicationContext db,
-            IOptions<AuthOptions> authOptions,
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="authOptions">Опции авторизации</param>
+        /// <param name="accountsManager">Менеджер аккаунтов</param>
+        /// <param name="tokensManager">Менеджер токенов</param>
+        public AuthController(IOptions<AuthOptions> authOptions,
             AccountsManager accountsManager,
             TokensManager tokensManager)
         {
-            _db = db;
             _authOptions = authOptions;
             _accountsManager = accountsManager;
             _tokensManager = tokensManager;

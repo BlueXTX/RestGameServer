@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
@@ -7,26 +6,33 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using PaidGame.Server.Models;
 using PaidGame.Server.Models.Responses;
 
 namespace PaidGame.Server.Controllers
 {
+    /// <summary>
+    /// Контроллер для обработки данных игрока
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
     public class StatsController : ControllerBase
     {
-        private ApplicationContext _db;
+        private readonly ApplicationContext _db;
 
         private long AccountChatId =>
             Convert.ToInt64(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier)
                 .Value);
 
-        private AccountsManager _accountsManager;
+        private readonly AccountsManager _accountsManager;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="db">Контекст базы данных</param>
+        /// <param name="accountsManager">Менеджер аккаунтов</param>
         public StatsController(ApplicationContext db, AccountsManager accountsManager)
         {
             _db = db;
