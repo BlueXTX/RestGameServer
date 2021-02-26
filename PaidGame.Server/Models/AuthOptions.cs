@@ -3,6 +3,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace PaidGame.Server.Models
 {
+    /// <summary>
+    /// Опции генерации токенов
+    /// </summary>
     public class AuthOptions
     {
         /// <summary>

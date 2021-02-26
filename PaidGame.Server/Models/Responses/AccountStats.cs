@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
@@ -41,6 +42,16 @@ namespace PaidGame.Server.Models.Responses
         public float Score { get; set; }
 
         /// <summary>
+        /// Количество жизней аккаунта
+        /// </summary>
+        public int Lives { get; set; }
+
+        /// <summary>
+        /// Бустер аккаунта
+        /// </summary>
+        public List<Booster> Boosters { get; set; }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="chatId">Id чата с аккаунтом</param>
@@ -48,11 +59,15 @@ namespace PaidGame.Server.Models.Responses
         /// <param name="moneyBalance">Баланс денег аккаунта</param>
         /// <param name="realBalance">Баланс реалов аккаунта</param>
         /// <param name="score">Количество очков аккаунта</param>
+        /// <param name="lives">Количество жизней аккаунта</param>
+        /// <param name="boosters">Бустеры аккаунта</param>
         public AccountStats(long chatId,
             string nickname,
             float moneyBalance,
             float realBalance,
-            float score
+            float score,
+            int lives,
+            List<Booster> boosters
         )
         {
             ChatId = chatId;
@@ -60,6 +75,8 @@ namespace PaidGame.Server.Models.Responses
             MoneyBalance = moneyBalance;
             RealBalance = realBalance;
             Score = score;
+            Lives = lives;
+            Boosters = boosters;
         }
     }
 }

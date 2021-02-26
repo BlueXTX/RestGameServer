@@ -1,28 +1,28 @@
 using System;
 using System.IO;
 using System.Reflection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using PaidGame.Server.Controllers;
 using PaidGame.Server.Models;
+using PaidGame.Server.Services;
 
 namespace PaidGame.Server
 {
     public class Startup
     {
+        private IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -39,7 +39,8 @@ namespace PaidGame.Server
             });
             var authOptionsConfiguration = Configuration.GetSection("Auth");
             services.Configure<AuthOptions>(authOptionsConfiguration);
-            services.AddScoped<ApplicationContext>();
+            services.AddDbContext<ApplicationContext>();
+            services.AddScoped<LeaguesManager>();
             services.AddScoped<AccountsManager>();
             services.AddScoped<TokensManager>();
             services.AddJwtAuth(Configuration);
@@ -52,7 +53,7 @@ namespace PaidGame.Server
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "PaidGame.Server v1"));
+                    c.SwaggerEndpoint("v1/swagger.json", "PaidGame.Server v1"));
             }
 
             app.UseHttpsRedirection();
@@ -63,6 +64,7 @@ namespace PaidGame.Server
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseDeveloperExceptionPage();
         }
     }
 }

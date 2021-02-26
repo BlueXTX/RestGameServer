@@ -5,8 +5,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using PaidGame.Server.Models;
 
-namespace PaidGame.Server
+namespace PaidGame.Server.Services
 {
+    /// <summary>
+    /// Сервис авторизации по Jwt токену
+    /// </summary>
     public static class JwtService
     {
         /// <summary>

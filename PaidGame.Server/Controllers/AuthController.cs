@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PaidGame.Server.Models;
 using PaidGame.Server.Models.Requests;
+using PaidGame.Server.Services;
 
 namespace PaidGame.Server.Controllers
 {
@@ -53,7 +54,7 @@ namespace PaidGame.Server.Controllers
         public async Task<IActionResult> Register(
             [FromBody] RegisterParams registerParams)
         {
-            if (await _accountsManager.AddAcountAsync(registerParams))
+            if (await _accountsManager.AddAccountAsync(registerParams))
             {
                 return Ok("User registered successfully");
             }

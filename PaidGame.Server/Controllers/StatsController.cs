@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PaidGame.Server.Models;
 using PaidGame.Server.Models.Responses;
+using PaidGame.Server.Services;
 
 namespace PaidGame.Server.Controllers
 {
@@ -28,11 +29,7 @@ namespace PaidGame.Server.Controllers
 
         private readonly AccountsManager _accountsManager;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="db">Контекст базы данных</param>
-        /// <param name="accountsManager">Менеджер аккаунтов</param>
+        /// <inheritdoc />
         public StatsController(ApplicationContext db, AccountsManager accountsManager)
         {
             _db = db;
