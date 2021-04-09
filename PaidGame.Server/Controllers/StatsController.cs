@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using PaidGame.Server.Models;
 using PaidGame.Server.Models.Responses;
 using PaidGame.Server.Services;
@@ -23,9 +24,8 @@ namespace PaidGame.Server.Controllers
     {
         private readonly ApplicationContext _db;
 
-        private long AccountChatId =>
-            Convert.ToInt64(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier)
-                .Value);
+        private string AccountLogin =>
+            User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value;
 
         private readonly AccountsManager _accountsManager;
 
@@ -44,7 +44,7 @@ namespace PaidGame.Server.Controllers
         [HttpGet]
         public async Task<AccountStats> GetUserStats()
         {
-            var account = await _accountsManager.GetAccountAsync(AccountChatId);
+            var account = await _accountsManager.GetAccountAsync(AccountLogin);
             return account.GetStats();
         }
 
@@ -60,7 +60,7 @@ namespace PaidGame.Server.Controllers
             if (Path.GetExtension(avatar.FileName) == ".jpg")
             {
                 await using var fs = new FileStream(
-                    AppContext.BaseDirectory + "/avatars/" + AccountChatId + ".jpg",
+                    AppContext.BaseDirectory + "/avatars/" + AccountLogin + ".jpg",
                     FileMode.Create);
                 await avatar.CopyToAsync(fs);
                 return Ok("Avatar uploaded");
@@ -77,19 +77,23 @@ namespace PaidGame.Server.Controllers
         [HttpGet]
         public async Task<FileResult> GetUserAvatar()
         {
-            string path = AppContext.BaseDirectory +
-                          "/avatars/" + AccountChatId +
-                          ".jpg";
-            if (!Directory.Exists(path))
+            var result = await Task.Run(() =>
             {
-                var emptyAvatar =
-                    new FileStream(AppContext.BaseDirectory + "/avatars/unknown.png",
-                        FileMode.Open, FileAccess.Read);
-                return new FileStreamResult(emptyAvatar, "image/png");
-            }
+                string path = AppContext.BaseDirectory +
+                              "/avatars/" + AccountLogin +
+                              ".jpg";
+                if (!Directory.Exists(path))
+                {
+                    var emptyAvatar =
+                        new FileStream(AppContext.BaseDirectory + "/avatars/unknown.png",
+                            FileMode.Open, FileAccess.Read);
+                    return new FileStreamResult(emptyAvatar, "image/png");
+                }
 
-            var avatar = new FileStream(path, FileMode.Open, FileAccess.Read);
-            return new FileStreamResult(avatar, "image/jpeg");
+                var avatar = new FileStream(path, FileMode.Open, FileAccess.Read);
+                return new FileStreamResult(avatar, "image/jpeg");
+            });
+            return result;
         }
 
         /// <summary>
@@ -101,7 +105,16 @@ namespace PaidGame.Server.Controllers
         public async Task<SocialNetworksList> GetAccountSocials()
         {
             return await _db.SocialNetworksList.FirstOrDefaultAsync(
-                s => s.Id == AccountChatId);
+                s => s.Login == AccountLogin);
+        }
+
+        [Route("GetAccountBooster")]
+        [HttpGet]
+        public async Task<IActionResult> GetAccountBooster()
+        {
+            var booster =
+                await _db.Boosters.FirstOrDefaultAsync(x => x.Login == AccountLogin);
+            return Ok(JsonConvert.SerializeObject(booster));
         }
 
         /// <summary>
@@ -114,9 +127,9 @@ namespace PaidGame.Server.Controllers
         public async Task<IActionResult> ChangeAccountNickname(
             [FromBody] string newNickname)
         {
-            var account = await _accountsManager.GetAccountAsync(AccountChatId);
+            var account = await _accountsManager.GetAccountAsync(AccountLogin);
             account.Nickname = newNickname;
-            await _db.SaveChangesAsync();
+            await _accountsManager.UpdateAccountAsync(account);
             return Ok("Nickname successfully changed");
         }
     }

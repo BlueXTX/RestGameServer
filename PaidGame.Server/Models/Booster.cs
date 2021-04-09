@@ -14,6 +14,11 @@ namespace PaidGame.Server.Models
         public long Id { get; set; }
 
         /// <summary>
+        /// Логин обладателя
+        /// </summary>
+        public string Login { get; set; }
+
+        /// <summary>
         /// Количество игр, на которые действует бустер
         /// </summary>
         public int GamesCount { get; set; }
@@ -21,10 +26,11 @@ namespace PaidGame.Server.Models
         /// <summary>
         /// Множитель опыта
         /// </summary>
-        public int ScoreMultiplier { get; set; }
+        public float ScoreMultiplier { get; set; }
 
-        public Booster(int gamesCount, int scoreMultiplier)
+        public Booster(string login, int gamesCount, float scoreMultiplier)
         {
+            Login = login;
             GamesCount = gamesCount;
             ScoreMultiplier = scoreMultiplier;
         }

@@ -11,7 +11,7 @@ namespace PaidGame.Server.Models.Requests
         /// Id чата с пользователем
         /// </summary>
         [Required]
-        public long ChatId { get; set; }
+        public string Login { get; set; }
 
         /// <summary>
         /// Старый пароль
@@ -25,9 +25,9 @@ namespace PaidGame.Server.Models.Requests
         [Required]
         public string NewPassword { get; set; }
         
-        public ChangePasswordParams(long chatId, string oldPassword, string newPassword)
+        public ChangePasswordParams(string login, string oldPassword, string newPassword)
         {
-            ChatId = chatId;
+            Login = login;
             OldPassword = oldPassword;
             NewPassword = newPassword;
         }

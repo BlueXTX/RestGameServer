@@ -19,9 +19,8 @@ namespace PaidGame.Server.Controllers
     [Authorize]
     public class GameController : ControllerBase
     {
-        private long AccountChatId =>
-            Convert.ToInt64(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier)
-                .Value);
+        private string AccountLogin =>
+            User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value;
 
         private readonly ApplicationContext _db;
         private readonly AccountsManager _accountsManager;
@@ -45,18 +44,23 @@ namespace PaidGame.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> StartGame()
         {
-            var user = await _accountsManager.GetAccountAsync(AccountChatId);
+            var user = await _accountsManager.GetAccountAsync(AccountLogin);
             if (user == default)
             {
-                return BadRequest("User not found");
+                return Ok("User not found");
             }
 
             if (user.MoneyBalance <= 0)
             {
-                return BadRequest("Not enough money");
+                return Ok("Not enough money");
             }
 
-            var game = new GameSession(AccountChatId);
+            if (user.Lives <= 0)
+            {
+                return Ok("Not enough lives");
+            }
+
+            var game = new GameSession(AccountLogin);
             await _db.GameSessions.AddAsync(game);
             await _db.SaveChangesAsync();
             return Ok();
@@ -71,7 +75,7 @@ namespace PaidGame.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> FinishGame(GameResultParams resultParams)
         {
-            var user = await _accountsManager.GetAccountAsync(AccountChatId);
+            var user = await _accountsManager.GetAccountAsync(AccountLogin);
             if (user == default)
             {
                 return BadRequest("User not found");
@@ -87,8 +91,9 @@ namespace PaidGame.Server.Controllers
             }
 
             gameSession.FinishDate = DateTime.Now;
+            _db.Update(gameSession);
+            await _db.SaveChangesAsync();
             await _leaguesManager.CalculateReward(user, resultParams.Score);
-            await _leaguesManager.AddScoreAndRecalculateLeague(user, resultParams.Score);
             return Ok();
         }
     }

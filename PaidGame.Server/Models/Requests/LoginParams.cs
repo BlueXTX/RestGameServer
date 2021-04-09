@@ -8,10 +8,10 @@ namespace PaidGame.Server.Models.Requests
     public class LoginParams
     {
         /// <summary>
-        /// Id чата с пользователем
+        /// Логи пользователя
         /// </summary>
         [Required]
-        public long ChatId { get; set; }
+        public string Login { get; set; }
 
         /// <summary>
         /// Пароль пользователя
@@ -19,9 +19,9 @@ namespace PaidGame.Server.Models.Requests
         [Required]
         public string Password { get; set; }
 
-        public LoginParams(long chatId, string password)
+        public LoginParams(string login, string password)
         {
-            ChatId = chatId;
+            Login = login;
             Password = password;
         }
     }

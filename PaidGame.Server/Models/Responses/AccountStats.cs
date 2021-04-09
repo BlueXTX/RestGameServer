@@ -11,7 +11,7 @@ namespace PaidGame.Server.Models.Responses
         /// </summary>
         [NotNull]
         [Required]
-        public long ChatId { get; set; }
+        public string Login { get; set; }
 
         /// <summary>
         /// Никнейм аккаунта
@@ -44,39 +44,33 @@ namespace PaidGame.Server.Models.Responses
         /// <summary>
         /// Количество жизней аккаунта
         /// </summary>
+        [NotNull]
+        [Required]
         public int Lives { get; set; }
-
-        /// <summary>
-        /// Бустер аккаунта
-        /// </summary>
-        public List<Booster> Boosters { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="chatId">Id чата с аккаунтом</param>
+        /// <param name="login">Id чата с аккаунтом</param>
         /// <param name="nickname">Никнейм аккаунта</param>
         /// <param name="moneyBalance">Баланс денег аккаунта</param>
         /// <param name="realBalance">Баланс реалов аккаунта</param>
         /// <param name="score">Количество очков аккаунта</param>
         /// <param name="lives">Количество жизней аккаунта</param>
-        /// <param name="boosters">Бустеры аккаунта</param>
-        public AccountStats(long chatId,
+        public AccountStats(string login,
             string nickname,
             float moneyBalance,
             float realBalance,
             float score,
-            int lives,
-            List<Booster> boosters
+            int lives
         )
         {
-            ChatId = chatId;
+            Login = login;
             Nickname = nickname;
             MoneyBalance = moneyBalance;
             RealBalance = realBalance;
             Score = score;
             Lives = lives;
-            Boosters = boosters;
         }
     }
 }

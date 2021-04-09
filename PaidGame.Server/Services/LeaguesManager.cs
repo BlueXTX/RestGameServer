@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -52,23 +53,11 @@ namespace PaidGame.Server.Services
                     var leagueInDb = await _db.Leagues.FirstAsync(x =>
                         x.ScoreRequirement == league.ScoreRequirement);
                     account.LeagueId = leagueInDb.Id;
+                    _db.Update(account);
                     await _db.SaveChangesAsync();
                     break;
                 }
             }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="account"></param>
-        /// <param name="score"></param>
-        /// <returns></returns>
-        public async Task AddScoreAndRecalculateLeague(Account account, long score)
-        {
-            account.Score += score;
-            await _db.SaveChangesAsync();
-            await CalculateLeague(account);
         }
 
         /// <summary>
@@ -77,13 +66,50 @@ namespace PaidGame.Server.Services
         /// <param name="account">Аккаунт для зачисления</param>
         /// <param name="score">Счет в сессии</param>
         /// <returns></returns>
-        public async Task CalculateReward(Account account, long score)
+        public async Task CalculateReward(Account account, float score)
         {
+            float scoreCost = _config.GetSection("Game").GetValue<float>("ScoreCost");
+
+            var booster =
+                await _db.Boosters.FirstOrDefaultAsync(x => x.Login == account.Login);
+            if (booster != default)
+            {
+                if (booster.GamesCount > 0)
+                {
+                    booster.GamesCount -= 1;
+
+                    _db.Update(booster);
+                }
+                else
+                {
+                    _db.Remove(booster);
+                    account.BoosterId = 0;
+                    await _db.SaveChangesAsync();
+                }
+            }
+
             account.Lives -= 1;
-            account.MoneyBalance -=
-                (float) score / 10;
-            account.RealBalance +=
-                (float) score / 10 * _leagues[account.LeagueId + 1].MoneyMultiplier;
+            account.MoneyBalance -= score * scoreCost;
+
+            if (booster != default)
+            {
+                account.RealBalance +=
+                    score * scoreCost * _leagues[Math.Clamp(account.LeagueId - 1, 0, _leagues.Count - 1)].MoneyMultiplier *
+                    booster.ScoreMultiplier;
+                account.Score += score * booster.ScoreMultiplier;
+            }
+            else
+            {
+                account.RealBalance +=
+                    score * scoreCost *
+                    _leagues[Math.Clamp(account.LeagueId - 1, 0, _leagues.Count - 1)]
+                        .MoneyMultiplier;
+                account.Score += score;
+            }
+
+            _db.Update(account);
+            await _db.SaveChangesAsync();
+            await CalculateLeague(account);
         }
     }
 }

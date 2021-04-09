@@ -20,18 +20,20 @@ namespace PaidGame.Server.Controllers
     {
         private readonly AccountsManager _accountsManager;
         private readonly IConfiguration _config;
+        private readonly BoosterManager _boosterManager;
 
         /// <inheritdoc />
         public ShopController(AccountsManager accountsManager,
-            IConfiguration config)
+            IConfiguration config,
+            BoosterManager boosterManager)
         {
             _accountsManager = accountsManager;
             _config = config;
+            _boosterManager = boosterManager;
         }
 
-        private long AccountChatId =>
-            Convert.ToInt64(User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier)
-                .Value);
+        private string AccountLogin =>
+            User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value;
 
         /// <summary>
         /// Купить попытку игры
@@ -47,7 +49,7 @@ namespace PaidGame.Server.Controllers
                 return BadRequest("Invalid amount");
             }
 
-            var user = await _accountsManager.GetAccountAsync(AccountChatId);
+            var user = await _accountsManager.GetAccountAsync(AccountLogin);
             if (user == null) return BadRequest();
             float liveCost = _config.GetSection("Game").GetValue<float>("LiveCost");
             if (!(user.MoneyBalance >= liveCost * amount))
@@ -66,13 +68,13 @@ namespace PaidGame.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> BuyBooster()
         {
-            var user = await _accountsManager.GetAccountAsync(AccountChatId);
+            var user = await _accountsManager.GetAccountAsync(AccountLogin);
             if (user == null) return BadRequest();
             float boosterCost = _config.GetSection("Game").GetValue<float>("BoosterCost");
             if (!(user.MoneyBalance >= boosterCost))
                 return BadRequest("Not enough money");
             user.MoneyBalance -= boosterCost;
-            user.Booster = new Booster(5, 2);
+            await _boosterManager.AddBoosterToAccount(user, 5, 2);
             await _accountsManager.UpdateAccountAsync(user);
             return Ok("Booster bought");
         }

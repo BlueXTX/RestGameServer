@@ -13,11 +13,15 @@ namespace PaidGame.Server.Services
     {
         private readonly ApplicationContext _db;
         private readonly LeaguesManager _leaguesManager;
+        private readonly BoosterManager _boosterManager;
 
-        public AccountsManager(ApplicationContext db, LeaguesManager leaguesManager)
+        public AccountsManager(ApplicationContext db,
+            LeaguesManager leaguesManager,
+            BoosterManager boosterManager)
         {
             _db = db;
             _leaguesManager = leaguesManager;
+            _boosterManager = boosterManager;
         }
 
         /// <summary>
@@ -27,17 +31,17 @@ namespace PaidGame.Server.Services
         /// <returns></returns>
         public async Task<bool> AddAccountAsync(RegisterParams registerParams)
         {
-            if (await GetAccountAsync(registerParams.ChatId) != null)
+            if (await GetAccountAsync(registerParams.Login) != null)
             {
                 return false;
             }
 
-            await _db.Accounts.AddAsync(new Account(registerParams.ChatId,
-                registerParams.Password, registerParams.ChatId.ToString(),
-                new Booster(5, 2)));
+            await _db.Accounts.AddAsync(new Account(registerParams.Login,
+                registerParams.Password, registerParams.Login, 3));
             await _db.SaveChangesAsync();
-            var createdAccount = await GetAccountAsync(registerParams.ChatId);
-            await _leaguesManager.CalculateLeague(createdAccount);
+            var acc = await GetAccountAsync(registerParams.Login);
+            await _boosterManager.AddBoosterToAccount(acc, 5, 2);
+            await _leaguesManager.CalculateLeague(acc);
             return true;
         }
 
@@ -49,7 +53,7 @@ namespace PaidGame.Server.Services
         public async Task<bool> AccountExistsAsync(Account account)
         {
             var acc = await _db.Accounts.FirstOrDefaultAsync(
-                x => account.ChatId == x.ChatId);
+                x => account.Login == x.Login);
             return acc != null;
         }
 
@@ -58,9 +62,9 @@ namespace PaidGame.Server.Services
         /// </summary>
         /// <param name="chatId">Id чата с пользователем</param>
         /// <returns></returns>
-        public async Task<Account> GetAccountAsync(long chatId)
+        public async Task<Account> GetAccountAsync(string login)
         {
-            return await _db.Accounts.FirstOrDefaultAsync(x => x.ChatId == chatId);
+            return await _db.Accounts.FirstOrDefaultAsync(x => x.Login == login);
         }
 
         /// <summary>
@@ -71,7 +75,7 @@ namespace PaidGame.Server.Services
         public async Task<bool> VerifyLogPassAsync(LoginParams loginParams)
         {
             var acc = await _db.Accounts.FirstOrDefaultAsync(
-                x => x.ChatId == loginParams.ChatId &&
+                x => x.Login == loginParams.Login &&
                      x.Password == loginParams.Password);
             return acc != null;
         }
@@ -84,7 +88,7 @@ namespace PaidGame.Server.Services
         public async Task<bool> ChangePasswordAsync(
             ChangePasswordParams changePasswordParams)
         {
-            var account = await GetAccountAsync(changePasswordParams.ChatId);
+            var account = await GetAccountAsync(changePasswordParams.Login);
             if (account == null) return false;
             account.Password = changePasswordParams.NewPassword;
             await _db.SaveChangesAsync();

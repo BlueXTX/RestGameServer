@@ -15,9 +15,9 @@ namespace PaidGame.Server.Models
         public long Id { get; set; }
 
         /// <summary>
-        /// Id пользователя, создавшего игру
+        /// Логин пользователя, создавшего игру
         /// </summary>
-        public long InitiatorChatId { get; set; }
+        public string InitiatorLogin { get; set; }
 
         /// <summary>
         /// Дата начала игры
@@ -29,9 +29,9 @@ namespace PaidGame.Server.Models
         /// </summary>
         public DateTime FinishDate { get; set; }
 
-        public GameSession(long initiatorChatId)
+        public GameSession(string initiatorLogin)
         {
-            InitiatorChatId = initiatorChatId;
+            InitiatorLogin = initiatorLogin;
             StartDate = DateTime.Now;
         }
     }

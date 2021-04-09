@@ -14,10 +14,10 @@ namespace PaidGame.Server.Models
         public long Id { get; set; }
 
         /// <summary>
-        /// Id чата, которому принадлежит этот список
+        /// Логин пользователя, которому принадлежит этот список
         /// </summary>
         [Required]
-        public long ChatId { get; set; }
+        public string Login { get; set; }
 
         /// <summary>
         /// Одноклассники
@@ -57,10 +57,10 @@ namespace PaidGame.Server.Models
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="chatId">Id чата с аккаунтом</param>
-        public SocialNetworksList(long chatId)
+        /// <param name="login">Id чата с аккаунтом</param>
+        public SocialNetworksList(string login)
         {
-            ChatId = chatId;
+            Login = login;
         }
     }
 }

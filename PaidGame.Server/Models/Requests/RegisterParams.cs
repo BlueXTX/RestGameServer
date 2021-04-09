@@ -8,11 +8,11 @@ namespace PaidGame.Server.Models.Requests
     public class RegisterParams
     {
         /// <summary>
-        /// Id чата с аккаунтом 
+        /// Логин аккаунта 
         /// </summary>
 
         [Required]
-        public long ChatId { get; set; }
+        public string Login { get; set; }
 
         /// <summary>
         /// Пароль аккаунта

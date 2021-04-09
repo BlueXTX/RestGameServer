@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
-using PaidGame.Server.Controllers;
 using PaidGame.Server.Models;
 using PaidGame.Server.Services;
 
@@ -29,6 +28,7 @@ namespace PaidGame.Server
             services.AddControllers().AddNewtonsoftJson(
                 options => options.SerializerSettings.ReferenceLoopHandling =
                     ReferenceLoopHandling.Ignore);
+            services.AddCors();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1",
@@ -39,7 +39,8 @@ namespace PaidGame.Server
             });
             var authOptionsConfiguration = Configuration.GetSection("Auth");
             services.Configure<AuthOptions>(authOptionsConfiguration);
-            services.AddDbContext<ApplicationContext>();
+            services.AddDbContext<ApplicationContext>(ServiceLifetime.Transient);
+            services.AddScoped<BoosterManager>();
             services.AddScoped<LeaguesManager>();
             services.AddScoped<AccountsManager>();
             services.AddScoped<TokensManager>();
@@ -55,6 +56,12 @@ namespace PaidGame.Server
                 app.UseSwaggerUI(c =>
                     c.SwaggerEndpoint("v1/swagger.json", "PaidGame.Server v1"));
             }
+
+            app.UseCors(x =>
+                x.SetIsOriginAllowed(str => _ = true)
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
 
             app.UseHttpsRedirection();
 

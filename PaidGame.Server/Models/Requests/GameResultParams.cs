@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace PaidGame.Server.Models.Requests
 {
     /// <summary>
@@ -8,6 +10,7 @@ namespace PaidGame.Server.Models.Requests
         /// <summary>
         /// Счет сессии
         /// </summary>
-        public long Score { get; set; }
+        [Required]
+        public float Score { get; set; }
     }
 }

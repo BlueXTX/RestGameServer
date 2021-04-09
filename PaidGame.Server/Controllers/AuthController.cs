@@ -25,9 +25,8 @@ namespace PaidGame.Server.Controllers
         private readonly AccountsManager _accountsManager;
         private readonly TokensManager _tokensManager;
 
-        private long UserId => Convert.ToInt64(User.Claims
-            .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)
-            ?.Value);
+        private string AccountLogin =>
+            User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value;
 
         /// <summary>
         /// 
@@ -56,10 +55,10 @@ namespace PaidGame.Server.Controllers
         {
             if (await _accountsManager.AddAccountAsync(registerParams))
             {
-                return Ok("User registered successfully");
+                return Ok("User registered");
             }
 
-            return Conflict();
+            return Conflict("User can't be registered");
         }
 
         /// <summary>
@@ -74,7 +73,7 @@ namespace PaidGame.Server.Controllers
             if (await _accountsManager.VerifyLogPassAsync(loginParams))
             {
                 return await GenerateJwtAsync(
-                    await _accountsManager.GetAccountAsync(loginParams.ChatId));
+                    await _accountsManager.GetAccountAsync(loginParams.Login));
             }
 
             return new TokenPair(string.Empty, string.Empty);
@@ -93,7 +92,7 @@ namespace PaidGame.Server.Controllers
             [FromBody] ChangePasswordParams changePasswordParams)
         {
             if (!await _accountsManager.VerifyLogPassAsync(
-                new LoginParams(changePasswordParams.ChatId,
+                new LoginParams(changePasswordParams.Login,
                     changePasswordParams.OldPassword)))
             {
                 return Unauthorized("Invalid credentials");
@@ -114,13 +113,12 @@ namespace PaidGame.Server.Controllers
         /// <returns>Новая пара токенов</returns>
         [Route("RefreshToken")]
         [HttpGet]
-        public async Task<TokenPair> RefreshToken(string refreshToken)
+        public async Task<IActionResult> RefreshToken(string refreshToken)
         {
             if (!await _tokensManager.TokenPairExistsAsync(refreshToken))
-                return new TokenPair(string.Empty, string.Empty);
+                return BadRequest("Token pair doesn't exist");
             await _tokensManager.DeleteTokenAsync(refreshToken);
-            return await GenerateJwtAsync(
-                await _accountsManager.GetAccountAsync(UserId));
+            return Ok();
         }
 
         /// <summary>
@@ -160,7 +158,7 @@ namespace PaidGame.Server.Controllers
 
             var claims = new List<Claim>
             {
-                new(ClaimTypes.NameIdentifier, account.ChatId.ToString()),
+                new(ClaimTypes.NameIdentifier, account.Login),
             };
 
             var accessToken = new JwtSecurityToken(

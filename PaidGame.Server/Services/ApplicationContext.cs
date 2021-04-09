@@ -7,7 +7,7 @@ namespace PaidGame.Server.Services
     /// <summary>
     /// Контекст приложения
     /// </summary>
-    public class ApplicationContext : DbContext
+    public sealed class ApplicationContext : DbContext
     {
         /// <summary>
         /// Аккаунты пользователей
@@ -23,6 +23,8 @@ namespace PaidGame.Server.Services
         /// Списки социальных сетей пользователей
         /// </summary>
         public DbSet<SocialNetworksList> SocialNetworksList { get; set; }
+        
+        public DbSet<Booster> Boosters { get; set; }
 
         /// <summary>
         /// Рейтинговые лиги

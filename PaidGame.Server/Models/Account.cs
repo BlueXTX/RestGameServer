@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 using PaidGame.Server.Models.Responses;
 
 namespace PaidGame.Server.Models
@@ -18,11 +16,11 @@ namespace PaidGame.Server.Models
         public long Id { get; set; }
 
         /// <summary>
-        /// Id чата с аккаунтом
+        /// Логин аккаунта
         /// </summary>
 
         [Required]
-        public long ChatId { get; set; }
+        public string Login { get; set; }
 
         /// <summary>
         /// Никнейм аккаунта
@@ -64,28 +62,20 @@ namespace PaidGame.Server.Models
         /// <summary>
         /// Активные бустеры аккаунта
         /// </summary>
-        public Booster Booster { get; set; }
+        public long BoosterId { get; set; }
 
         /// <summary>
         /// Id лиги, в которой состоит пользователь
         /// </summary>
         public int LeagueId { get; set; }
 
-        public Account(long chatId, string password, string nickname)
+        public Account(string login, string password, string nickname, int lives)
         {
-            ChatId = chatId;
+            Login = login;
             Password = password;
             Nickname = nickname;
-            SocialNetworksList = new SocialNetworksList(chatId);
-        }
-
-        public Account(long chatId, string password, string nickname, Booster booster)
-        {
-            ChatId = chatId;
-            Password = password;
-            Nickname = nickname;
-            SocialNetworksList = new SocialNetworksList(chatId);
-            Booster = booster;
+            Lives = lives;
+            SocialNetworksList = new SocialNetworksList(login);
         }
 
         /// <summary>
@@ -94,8 +84,7 @@ namespace PaidGame.Server.Models
         /// <returns>AccountStats с данными пользователя</returns>
         public AccountStats GetStats()
         {
-            return new(ChatId, Nickname, MoneyBalance, RealBalance, Score, Lives,
-                new List<Booster>());
+            return new(Login, Nickname, MoneyBalance, RealBalance, Score, Lives);
         }
 
         /// <inheritdoc />
