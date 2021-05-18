@@ -22,6 +22,7 @@ namespace PaidGame.Server.Models
         /// Секретный ключ шифрования
         /// </summary>
         public string Secret { get; set; }
+
         public string RefreshSecret { get; set; }
 
         /// <summary>
@@ -33,7 +34,7 @@ namespace PaidGame.Server.Models
         /// Время действия токена обновления в секундах
         /// </summary>
         public int RefreshTokenLifetime { get; set; }
-        
+
         /// <summary>
         /// Получить симметричный ключ шифрования
         /// </summary>
@@ -42,7 +43,7 @@ namespace PaidGame.Server.Models
         {
             return new(Encoding.ASCII.GetBytes(Secret));
         }
-        
+
         public SymmetricSecurityKey GetRefreshSecurityKey()
         {
             return new(Encoding.ASCII.GetBytes(RefreshSecret));

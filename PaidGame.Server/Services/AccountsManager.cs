@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PaidGame.Server.Models;
@@ -37,7 +38,8 @@ namespace PaidGame.Server.Services
             }
 
             await _db.Accounts.AddAsync(new Account(registerParams.Login,
-                registerParams.Password, registerParams.Login, 3));
+                registerParams.Password, registerParams.Login, 3,
+                registerParams.ReferralId));
             await _db.SaveChangesAsync();
             var acc = await GetAccountAsync(registerParams.Login);
             await _boosterManager.AddBoosterToAccount(acc, 5, 2);
@@ -106,13 +108,16 @@ namespace PaidGame.Server.Services
             await _db.SaveChangesAsync();
         }
 
-        /// <summary>
-        /// Получить всех пользователей
-        /// </summary>
-        /// <returns></returns>
-        public async Task<List<Account>> GetAllUsers()
+        public async Task<List<Referral>> GetUserReferralsAsync(long id)
         {
-            return await _db.Accounts.ToListAsync();
+            var accs = await _db.Accounts.Where(x => x.ReferralId == id).ToListAsync();
+            return accs.Select(acc => acc.GetRefferal()).ToList();
+        }
+
+        public async Task<List<Referral>> GetUserReferralsAsync(string login)
+        {
+            var acc = await GetAccountAsync(login);
+            return await GetUserReferralsAsync(acc.Id);
         }
     }
 }

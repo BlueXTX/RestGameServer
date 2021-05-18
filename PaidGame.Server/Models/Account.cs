@@ -69,12 +69,22 @@ namespace PaidGame.Server.Models
         /// </summary>
         public int LeagueId { get; set; }
 
-        public Account(string login, string password, string nickname, int lives)
+        /// <summary>
+        /// Реферал-Id пригласившего человека 
+        /// </summary>
+        public long ReferralId { get; set; }
+
+        public Account(string login,
+            string password,
+            string nickname,
+            int lives,
+            long referralId)
         {
             Login = login;
             Password = password;
             Nickname = nickname;
             Lives = lives;
+            ReferralId = referralId;
             SocialNetworksList = new SocialNetworksList(login);
         }
 
@@ -84,11 +94,16 @@ namespace PaidGame.Server.Models
         /// <returns>AccountStats с данными пользователя</returns>
         public AccountStats GetStats()
         {
-            return new(Login, Nickname, MoneyBalance, RealBalance, Score, Lives);
+            return new(Id, Login, Nickname, MoneyBalance, RealBalance, Score, Lives);
+        }
+
+        public Referral GetRefferal()
+        {
+            return new(Nickname);
         }
 
         /// <inheritdoc />
-        public int CompareTo(Account? other)
+        public int CompareTo(Account other)
         {
             if (other != null)
             {

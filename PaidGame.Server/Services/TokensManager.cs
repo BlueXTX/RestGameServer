@@ -65,7 +65,7 @@ namespace PaidGame.Server.Services
             return await _db.TokenPairs.FirstOrDefaultAsync(t =>
                 t.RefreshToken == refreshToken);
         }
-        
+
         /// <summary>
         /// Удалить refresh token из БД
         /// </summary>

@@ -57,13 +57,16 @@ namespace PaidGame.Server
                     c.SwaggerEndpoint("v1/swagger.json", "PaidGame.Server v1"));
             }
 
+
+            //app.UseHttpsRedirection();
+
+
             app.UseCors(x =>
                 x.SetIsOriginAllowed(str => _ = true)
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials());
 
-            app.UseHttpsRedirection();
 
             app.UseRouting();
 

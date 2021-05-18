@@ -23,7 +23,7 @@ namespace PaidGame.Server.Services
         /// Списки социальных сетей пользователей
         /// </summary>
         public DbSet<SocialNetworksList> SocialNetworksList { get; set; }
-        
+
         public DbSet<Booster> Boosters { get; set; }
 
         /// <summary>

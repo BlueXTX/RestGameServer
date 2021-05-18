@@ -19,5 +19,10 @@ namespace PaidGame.Server.Models.Requests
         /// </summary>
         [Required]
         public string Password { get; set; }
+
+        /// <summary>
+        /// Реферал-Id пригласившего человека
+        /// </summary>
+        public long ReferralId { get; set; }
     }
 }

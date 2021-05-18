@@ -1,4 +1,4 @@
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
-COPY PaidGame.Server/bin/Release/net5.0/publish/ App/
-WORKDIR /App
+WORKDIR /app
+COPY /PaidGame.Server/bin/Release/net5.0/publish /app
 ENTRYPOINT ["dotnet", "PaidGame.Server.dll"]

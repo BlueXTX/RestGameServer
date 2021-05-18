@@ -23,7 +23,8 @@ namespace PaidGame.Server.Models
         /// <summary>
         /// Рефреш токен
         /// </summary>
-        [Required] public string RefreshToken { get; set; }
+        [Required]
+        public string RefreshToken { get; set; }
 
         public TokenPair(string accessToken, string refreshToken)
         {

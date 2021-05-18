@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
@@ -131,6 +132,17 @@ namespace PaidGame.Server.Controllers
             account.Nickname = newNickname;
             await _accountsManager.UpdateAccountAsync(account);
             return Ok("Nickname successfully changed");
+        }
+
+        /// <summary>
+        /// Получить список рефералов пользователя
+        /// </summary>
+        /// <returns></returns>
+        [Route("GetReferrals")]
+        [HttpGet]
+        public async Task<List<Referral>> GetReferrals()
+        {
+            return await _accountsManager.GetUserReferralsAsync(AccountLogin);
         }
     }
 }

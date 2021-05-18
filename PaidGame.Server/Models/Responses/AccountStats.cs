@@ -6,6 +6,8 @@ namespace PaidGame.Server.Models.Responses
 {
     public class AccountStats
     {
+        public long Id { get; set; }
+
         /// <summary>
         /// Id чата с аккаунтом
         /// </summary>
@@ -57,7 +59,8 @@ namespace PaidGame.Server.Models.Responses
         /// <param name="realBalance">Баланс реалов аккаунта</param>
         /// <param name="score">Количество очков аккаунта</param>
         /// <param name="lives">Количество жизней аккаунта</param>
-        public AccountStats(string login,
+        public AccountStats(long id,
+            string login,
             string nickname,
             float moneyBalance,
             float realBalance,
@@ -65,6 +68,7 @@ namespace PaidGame.Server.Models.Responses
             int lives
         )
         {
+            Id = id;
             Login = login;
             Nickname = nickname;
             MoneyBalance = moneyBalance;

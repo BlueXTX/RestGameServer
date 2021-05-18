@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PaidGame.Server.Models;
 using PaidGame.Server.Models.Requests;
+using PaidGame.Server.Models.Responses;
 using PaidGame.Server.Services;
 
 namespace PaidGame.Server.Controllers
@@ -58,7 +59,8 @@ namespace PaidGame.Server.Controllers
                 return Ok("User registered");
             }
 
-            return Conflict("User can't be registered");
+            return new OkObjectResult(
+                new ErrorResponse("User can't be registered"));
         }
 
         /// <summary>

@@ -24,7 +24,7 @@ namespace PaidGame.Server.Models.Requests
         /// </summary>
         [Required]
         public string NewPassword { get; set; }
-        
+
         public ChangePasswordParams(string login, string oldPassword, string newPassword)
         {
             Login = login;

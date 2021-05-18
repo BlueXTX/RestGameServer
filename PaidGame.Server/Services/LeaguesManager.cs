@@ -94,7 +94,9 @@ namespace PaidGame.Server.Services
             if (booster != default)
             {
                 account.RealBalance +=
-                    score * scoreCost * _leagues[Math.Clamp(account.LeagueId - 1, 0, _leagues.Count - 1)].MoneyMultiplier *
+                    score * scoreCost *
+                    _leagues[Math.Clamp(account.LeagueId - 1, 0, _leagues.Count - 1)]
+                        .MoneyMultiplier *
                     booster.ScoreMultiplier;
                 account.Score += score * booster.ScoreMultiplier;
             }
